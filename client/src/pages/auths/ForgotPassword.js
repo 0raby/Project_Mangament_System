@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
     const navigate = useNavigate();
     const cooldownIntervalRef = useRef(null)
-    const BaseAPIUrl = "http://localhost:8080/";
+    const BaseAPIUrl = process.env.BASE_API_URL;
 
     useEffect(() => {
         if (cooldown > 0) {

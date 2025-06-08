@@ -17,7 +17,7 @@ const Signup = ({onAuthChange}) => {
     const [agreedToTerms, setAgreedToTerms] = useState(false)
 
     const navigate = useNavigate();
-
+    const BaseAPIURL=process.env.BASE_API_URL;
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData((prev) => ({
@@ -31,7 +31,7 @@ const Signup = ({onAuthChange}) => {
 
             const { confirmPassword, ...dataToSend } = formData;
             
-            const res = await axios.post("http://localhost:8080/users/signup", dataToSend );
+            const res = await axios.post(`${BaseAPIURL}users/signup`, dataToSend );
             localStorage.setItem("token", res.data);
             onAuthChange(isAuthenticated());
 

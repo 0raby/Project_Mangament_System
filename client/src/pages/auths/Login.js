@@ -10,7 +10,7 @@ const Login = ({ onAuthChange }) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const BaseAPIURL = "http://localhost:8080"
+    const BaseAPIURL = process.env.BASE_API_URL;
 
 
 
@@ -18,7 +18,7 @@ const Login = ({ onAuthChange }) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(BaseAPIURL+"/users/login", {
+            const response = await axios.post(BaseAPIURL+"users/login", {
                 email,
                 password
             });

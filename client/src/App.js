@@ -7,7 +7,8 @@ import UserDashboard from './pages/dashboard/UserDashboard';
 import {isAuthenticated} from './Utils/auth';
 import ProtectedRoute from './Components/ProtectedRoute';
 import ForgotPassword from './pages/auths/ForgotPassword';
-
+import NavBar from './Components/NavBar'
+import Footer from './Components/Footer'
 export default function App() {
 
     const [authStatus, setAuthStatus] = useState({
@@ -53,12 +54,15 @@ export default function App() {
 
                 <Route path="/admin" element={
                     <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
+
                         <AdminHome/>
                     </ProtectedRoute>
                 }/>
                 <Route path="/user" element={
                     <ProtectedRoute allowedRoles={['ROLE_USER']}>
+                        <NavBar />
                         <UserDashboard userId={{id}}/>
+                        <Footer />
                     </ProtectedRoute>
                 }/>
                 <Route

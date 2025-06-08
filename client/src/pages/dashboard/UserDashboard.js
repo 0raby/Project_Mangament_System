@@ -42,6 +42,7 @@ const ProjectFormDialog = ({ isOpen, onClose, onSubmit, initialData = null }) =>
             setTitle(initialData.title);
             setDescription(initialData.description);
         } else {
+            setId(undefined);
             setTitle("");
             setDescription("");
         }
@@ -137,37 +138,46 @@ const UserDashboard = ({userId}) => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalProjectsNum, setTotalProjectsNum] = useState(0);
-    const BaseAPIURL = "http://localhost:8080/";
+    const BaseAPIURL = process.env.BASE_API_URL;
     const token = localStorage.getItem("token");
     const [refreshProjects, setRefreshProjects] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                if (userId.id !== 0) {
-                    const res = await axios.get(`${BaseAPIURL}projects/users/${userId.id}/projects`, {
-                        params: {
-                            page: currentPage,
-                            size: 5
-                        },
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
 
-                    setProjects(res.data.content);
-                    setTotalPages(res.data.totalPages);
-                    setTotalProjectsNum(res.data.totalElements);
+    const fetchProjects = async () => {
+        try {
+            setLoading(true);
+            if (userId.id !== 0) {
+                const res = await axios.get(`${BaseAPIURL}projects/users/${userId.id}/projects`, {
+                    params: {
+                        page: currentPage,
+                        size: 5
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-                    console.log({"backend result!!!!" : res})
-                }else{
-                    console.log({"Userid is" : userId.id})
-                }
-            } catch (err) {
-                console.error('Failed to fetch projects:', err);
+                setProjects(res.data.content);
+                setTotalPages(res.data.totalPages);
+                setTotalProjectsNum(res.data.totalElements);
 
+                console.log({"backend result!!!!" : res})
+            }else{
+                console.log({"Userid is" : userId.id})
             }
-        };
+        } catch (err) {
+            console.error('Failed to fetch projects:', err);
+
+        }
+        finally {
+            {
+                setLoading(false);
+            }
+        }
+    };
+    useEffect(() => {
+
 
         fetchProjects();
 
@@ -190,11 +200,16 @@ const UserDashboard = ({userId}) => {
             if(currentPage !== 0){
                 setCurrentPage(0);
             }
-            setProjects((prev) => [res.data, ...prev.slice(0, prev.length - 1)]);
-            if (totalProjectsNum % 5 === 0) {
-                setTotalPages((prev) => prev + 1);
-            }
-
+            // if(projects.length === 5){
+            //     setProjects((prev) => [res.data, ...prev.slice(0, prev.length - 1)]);
+            // }else{
+            //     setProjects((prev) => [res.data, ...prev]);
+            // }
+            //
+            // if (totalProjectsNum % 5 === 0) {
+            //     setTotalPages((prev) => prev + 1);
+            // }
+            await fetchProjects();
         }
         catch(err){
             alert("error");
@@ -281,34 +296,6 @@ const UserDashboard = ({userId}) => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-            {/* Dashboard Header */}
-            <header className="bg-white/80 backdrop-blur-sm shadow-md p-6 border-b border-white/20">
-                <div className="max-w-6xl mx-auto flex justify-between items-center">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent">
-                        User Dashboard
-                    </h1>
-                    <nav className="space-x-4">
-                        <button
-                            onClick={() => console.log("Profile clicked")}
-                            className="text-gray-700 hover:text-blue-600 transition-colors"
-                        >
-                            Profile
-                        </button>
-                        <button
-                            onClick={() => console.log("Settings clicked")}
-                            className="text-gray-700 hover:text-blue-600 transition-colors"
-                        >
-                            Settings
-                        </button>
-                        <button onClick={() => {localStorage.removeItem("token");
-                                        window.location.reload();
-                                        }} className="text-red-600 hover:text-red-800 transition-colors">
-                            Logout
-                        </button>
-                    </nav>
-                </div>
-            </header>
-
             {/* Main Content Area */}
             <main className="flex-1 p-8">
                 <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8">
@@ -325,7 +312,15 @@ const UserDashboard = ({userId}) => {
                         </button>
                     </div>
 
-                    {projects.length === 0 ? (
+                    {loading ? (
+                        <div className="flex justify-center items-center py-20">
+                            <div className="flex flex-col items-center space-y-2">
+                                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-gray-500">Loading projects...</span>
+                            </div>
+                        </div>
+                    ) : (
+                        projects.length === 0 ? (
                         <p className="text-center text-gray-500 py-10">
                             No projects found. Click "Add New Project" to get started!
                         </p>
@@ -398,7 +393,7 @@ const UserDashboard = ({userId}) => {
                                 ))}
                                 </tbody>
                             </table>
-                        </div>
+                        </div> )
                     )}
                     {totalPages > 1 && (
                         <div className="flex justify-center mt-6 space-x-2">
@@ -420,28 +415,16 @@ const UserDashboard = ({userId}) => {
                 </div>
             </main>
 
-            {/* Dashboard Footer */}
-            <footer className="bg-white/80 backdrop-blur-sm shadow-md p-6 border-t border-white/20 mt-auto">
-                <div className="max-w-6xl mx-auto text-center text-gray-600 text-sm">
-                    <p>&copy; {new Date().getFullYear()} Simple Task Management System. All rights reserved.</p>
-                    <div className="mt-2 space-x-4">
-                        <a href="#" className="hover:text-blue-600 transition-colors">
-                            Privacy Policy
-                        </a>
-                        <a href="#" className="hover:text-blue-600 transition-colors">
-                            Terms of Service
-                        </a>
-                        <a href="#" className="hover:text-blue-600 transition-colors">
-                            Contact Us
-                        </a>
-                    </div>
-                </div>
-            </footer>
+
 
             {/* Add Project Dialog */}
             <ProjectFormDialog
+                key={isAddProjectDialogOpen ? "add-project" : "closed"}
                 isOpen={isAddProjectDialogOpen}
-                onClose={() => setIsAddProjectDialogOpen(false)}
+                onClose={() => {
+                    setIsAddProjectDialogOpen(false);
+                    setEditingProject({ id: undefined, title: "", description: "" });
+                }}
                 onSubmit={handleAddProject}
             />
 
