@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
     const navigate = useNavigate();
     const cooldownIntervalRef = useRef(null)
-    const BaseAPIUrl = process.env.BASE_API_URL;
+    const BaseAPIUrl = process.env.REACT_APP_BASE_API_URL;
 
     useEffect(() => {
         if (cooldown > 0) {

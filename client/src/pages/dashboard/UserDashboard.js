@@ -138,7 +138,7 @@ const UserDashboard = ({userId}) => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalProjectsNum, setTotalProjectsNum] = useState(0);
-    const BaseAPIURL = process.env.BASE_API_URL;
+    const BaseAPIURL = process.env.REACT_APP_BASE_API_URL;
     const token = localStorage.getItem("token");
     const [refreshProjects, setRefreshProjects] = useState(true);
     const [loading, setLoading] = useState(false);

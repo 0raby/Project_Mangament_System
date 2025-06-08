@@ -17,7 +17,7 @@ const Signup = ({onAuthChange}) => {
     const [agreedToTerms, setAgreedToTerms] = useState(false)
 
     const navigate = useNavigate();
-    const BaseAPIURL=process.env.BASE_API_URL;
+    const BaseAPIURL=process.env.REACT_APP_BASE_API_URL;
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData((prev) => ({

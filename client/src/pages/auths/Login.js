@@ -10,7 +10,7 @@ const Login = ({ onAuthChange }) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
-    const BaseAPIURL = process.env.BASE_API_URL;
+    const BaseAPIURL = process.env.REACT_APP_BASE_API_URL;
 
 
 
