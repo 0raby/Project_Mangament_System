@@ -137,7 +137,7 @@ const UserDashboard = ({userId}) => {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [totalProjectsNum, setTotalProjectsNum] = useState(0);
+    // const [totalProjectsNum, setTotalProjectsNum] = useState(0);
     const BaseAPIURL = process.env.REACT_APP_BASE_API_URL;
     const token = localStorage.getItem("token");
     const [refreshProjects, setRefreshProjects] = useState(true);
@@ -160,7 +160,7 @@ const UserDashboard = ({userId}) => {
 
                 setProjects(res.data.content);
                 setTotalPages(res.data.totalPages);
-                setTotalProjectsNum(res.data.totalElements);
+                // setTotalProjectsNum(res.data.totalElements);
 
                 console.log({"backend result!!!!" : res})
             }else{
@@ -186,7 +186,7 @@ const UserDashboard = ({userId}) => {
     const handleAddProject = async (newProject) => {
         // setProjects((prev) => [...prev, newProject])
         try {
-            const res = await axios.post(`${BaseAPIURL}projects`,
+            await axios.post(`${BaseAPIURL}projects`,
                 {
                     title: newProject.title,
                     description: newProject.description,
