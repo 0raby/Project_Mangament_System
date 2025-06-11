@@ -1,0 +1,12 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex 549e00a..7c510a0 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -31,3 +31,6 @@[m [mbuild/[m
+ [m
+ ### VS Code ###[m
+ .vscode/[m
+[32m+[m
+[32m+[m[32m###[m
+[32m+[m[32msrc/main/resources/application.properties[m

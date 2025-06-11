@@ -16,8 +16,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 
@@ -27,6 +31,7 @@ public class TaskService {
     private final TaskRepo taskRepository;
     private final ProjectRepo projectRepository;
     private final TaskMapper taskMapper;
+    private final UserRepo userRepository;
 
 
     public TaskInfoDTO createTask(TaskCreateDTO taskCreateDTO) {
@@ -49,12 +54,25 @@ public class TaskService {
     public Page<TaskInfoDTO> getPaginatedTasksInProject(Integer projectId, int page, int size){
         Project project = projectRepository.findById(projectId).orElse(null);
         if (project == null) {
-            return Page.empty(); //return empty page instead of null
+            throw new CustomException("No project with this id", HttpStatus.NOT_FOUND);
         }
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Task> TaskPage = taskRepository.findByProjectId(projectId, pageable);
+        // ✅ Get current user (assuming username = email or id)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        ApplicationUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AccessDeniedException("Unauthorized"));
+        System.out.println("project email: " + project.getUser().getEmail());
+        System.out.println("Requested User's email: " + user.getEmail());
+        // ✅ Check ownership
+        if (!project.getUser().getEmail().equalsIgnoreCase(user.getEmail())) {
+            throw new AccessDeniedException("You don't have access to this project.");
+        }
+
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dueDate").ascending());
+        Page<Task> TaskPage = taskRepository.findByProjectId(projectId, pageable);
+        System.out.println("SENDING PAGABLE TASKSSS");
         return TaskPage.map(taskMapper::toInfoDTO);
     }
 
