@@ -10,6 +10,7 @@ import ForgotPassword from './pages/auths/ForgotPassword';
 import NavBar from './Components/NavBar'
 import Footer from './Components/Footer'
 import Tasks from "./pages/Tasks";
+import AdminNavBar from "./Components/AdminNavBar";
 export default function App() {
 
     const [authStatus, setAuthStatus] = useState({
@@ -56,7 +57,9 @@ export default function App() {
                 <Route path="/admin" element={
                     <ProtectedRoute allowedRoles={['ROLE_ADMIN']}>
 
-                        <AdminHome/>
+                        <AdminNavBar />
+                        <UserDashboard userId={{id}}/>
+                        <Footer />
                     </ProtectedRoute>
                 }/>
                 <Route path="/user" element={
@@ -67,7 +70,7 @@ export default function App() {
                     </ProtectedRoute>
                 }/>
                 <Route path="/tasks" element={
-                    <ProtectedRoute allowedRoles={['ROLE_USER']}>
+                    <ProtectedRoute allowedRoles={['ROLE_USER' , 'ROLE_ADMIN']}>
                         <NavBar />
                         <Tasks userId={{id}}/>
                         <Footer />

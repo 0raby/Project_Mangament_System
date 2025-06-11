@@ -154,6 +154,7 @@ const Tasks = ({userId}) => {
     const [taskToDelete, setTaskToDelete] = useState(null)
     const navigate = useNavigate();
     const [totalPages, setTotalPages] = useState(0);
+    const [projectName , setProjectName] = useState(null);
 
     const fetchTasks = async () => {
         try {
@@ -193,7 +194,25 @@ const Tasks = ({userId}) => {
         }
     }, [projectId, currentPage]);
 
-
+    const getProject = async () => {
+        try {
+            const res = await axios.get(`${BaseAPIURL}projects/${projectId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setProjectName(res.data.title);
+        }
+        catch(e){
+            alert("failed to load project")
+            navigate("/admin")
+        }
+    }
+    useEffect(() => {
+        if(projectId !== null) {
+            getProject();
+        }
+    }, [projectId]);
 
 
     const handleAddTask = async (toCreate) => {
@@ -281,7 +300,7 @@ const Tasks = ({userId}) => {
             <main className="flex-1 p-8">
                 <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Your Tasks</h2>
+                        <h2 className="text-2xl font-bold text-gray-800">{projectName}</h2>
                         <button
                             onClick={() => setIsAddTaskDialogOpen(true)}
                             className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center gap-2"

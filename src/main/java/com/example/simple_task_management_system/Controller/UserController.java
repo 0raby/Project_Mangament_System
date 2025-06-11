@@ -52,17 +52,18 @@ public class UserController {
         return userService.updateUserRole(updateUser);
     }
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/changeRole")
+    @GetMapping("/allUsers")
     public Page<UpdateUserRoleDTO> updateUserRoles(@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
         return userService.getPaginatedUsers(page, size);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping
     public void DeleteUser(@RequestBody UserUpdateDTO userUpdateDTO){
         userService.deleteUser(userUpdateDTO);
     }
+
 
     @GetMapping("/{id}")
     public UserInfoDTO GetUser(@PathVariable Integer id) {
